@@ -24,7 +24,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     })->name('version');
 // });
 
-Route::prefix('v1')->namespace('Api')->name('api.v1.')->group(function() {
+Route::prefix('v1')->namespace('Api')->name('api.v1.')->middleware('throttle:'.config('api.rate_limits.sign'))->group(function() {
     Route::get('version', function() {
         return 'this is version v1';
     })->name('version');
