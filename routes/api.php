@@ -24,27 +24,22 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     })->name('version');
 // });
 
-Route::prefix('v1')->namespace('Api')->name('api.v1.')->middleware('throttle:'.config('api.rate_limits.sign'))->group(function() {
-    Route::get('version', function() {
-        return 'this is version v1';
-    })->name('version');
+ // 登录后可以访问的接口
+//prefix('v1')->
+//->name('api.v1.')
+//->middleware('throttle:'.config('api.rate_limits.sign'))
 
-    // 短信验证码
-    Route::post('verificationCodes', 'VerificationCodesController@store')
-        ->name('verificationCodes.store');
+Route::namespace('Api')->group(function() {
 
-    // 用户注册
-    Route::post('users', 'UsersController@store')
-        ->name('users.store');
+    Route::post('verificationCodes', 'AuthorizationsController@store_verificatioCodes')->name('authorizations.store');// 短信验证码
+    Route::post('store_reg', 'AuthorizationsController@store_reg')->name('authorizations.store_reg');// 用户注册
+    Route::post('store_login', 'AuthorizationsController@store_login')->name('authorizations.store_login');// 用户登录
+    Route::post('captchas', 'AuthorizationsController@store_captchas')->name('authorizations.store');// 图片验证码
 
-    // 登录
-    Route::post('authorizations', 'AuthorizationsController@store')
-        ->name('api.authorizations.store');
+    Route::middleware('auth:api')->group(function() {
+        Route::post('home', 'HomeController@homepage')->name('user.home');// 首页
 
-    // 刷新token
-    Route::put('authorizations/current', 'AuthorizationsController@update')
-        ->name('authorizations.update');
-    // 删除token
-    Route::delete('authorizations/current', 'AuthorizationsController@destroy')
-        ->name('authorizations.destroy');
+    });
+
 });
+
